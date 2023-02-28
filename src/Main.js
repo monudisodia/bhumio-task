@@ -1,130 +1,124 @@
-import {useState} from 'react'
-import {Data} from './Data'
-import * as XLSX from 'xlsx'
+import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
+import { ShowData } from "./ShowData";
+import "./Main.css"
 
 function Main() {
-  
   // on change states
-  const [excelFile, setExcelFile]=useState(null);
-  const [excelFileError, setExcelFileError]=useState(null);  
- 
+  const [excelFile, setExcelFile] = useState(null);
+  const [excelFileError, setExcelFileError] = useState(null);
+
   // submit
-  const [excelData, setExcelData]=useState(null);
+  const [excelData, setExcelData] = useState(null);
   // it will contain array of objects
 
-  // handle File
-  const fileType=['application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-  const handleFile = (e)=>{
-    let selectedFile = e.target.files[0];
-    if(selectedFile){
-      console.log(selectedFile.type);
-      if(selectedFile&&fileType.includes(selectedFile.type)){
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(selectedFile);
-        reader.onload=(e)=>{
-          setExcelFileError(null);
-          setExcelFile(e.target.result);
-        } 
-      }
-      else{
-        setExcelFileError('Please select only excel file types');
-        setExcelFile(null);
-      }
-    }
-    else{
-      console.log('plz select your file');
-    }
-  }
 
-  // submit function
-  const handleSubmit=(e)=>{
-    e.preventDefault();
-    if(excelFile!==null){
-      const workbook = XLSX.read(excelFile,{type:'buffer'});
+  useEffect(()=>{
+    if (excelFile !== null) {
+      const workbook = XLSX.read(excelFile, { type: "buffer" });
       const worksheetName = workbook.SheetNames[0];
-      const worksheet=workbook.Sheets[worksheetName];
+      const worksheet = workbook.Sheets[worksheetName];
       const data = XLSX.utils.sheet_to_json(worksheet);
       setExcelData(data);
     }
-    else{
-      setExcelData(null);
-    }
-  }
-  
-  return (
-    <div className="container">
+  },[excelFile])
+  // handle File
+  const fileType = [
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ];
 
+  
+  const handleFile = (e) => {
+    let selectedFile = e.target.files[0];
+    if (selectedFile) {
+      console.log(selectedFile.type);
+      if (selectedFile && fileType.includes(selectedFile.type)) {
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(selectedFile);
+        reader.onload = (e) => {
+          setExcelFileError(null);
+          setExcelFile(e.target.result);
+        };
+      } else {
+        setExcelFileError("Please select only excel file types");
+        setExcelFile(null);
+      }
+    } else {
+      console.log("plz select your file");
+    }
+  };
+
+  
+
+  // submit function
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setExcelFile(null);
+    setExcelData(null);
+
+  };
+
+
+  console.log(excelData);
+
+  return (
+    <div className="main_container">
       {/* upload file section */}
-      <div className='form'>
-        <form className='form-group' autoComplete="off"
-        onSubmit={handleSubmit}>
-          <label><h5>Upload Excel file</h5></label>
-          <br></br>
-          <input type='file' className='form-control'
-          onChange={handleFile} required></input>                  
-          {excelFileError&&<div className='text-danger'
-          style={{marginTop:5+'px'}}>{excelFileError}</div>}
-          <button type='submit' className='btn btn-success'
-          style={{marginTop:5+'px'}}>Submit</button>
+      <div className="form">
+        <form className="form_container" autoComplete="off" onSubmit={handleSubmit}>
+          <label class="label">
+            <input
+              type="file"
+              class="custom-file-input"
+              onChange={handleFile}
+              required
+            />
+            <span>Import CSV...</span>
+          </label>
+
+
+
+          {excelFileError && (
+            <div className="text-danger">
+              {excelFileError}
+            </div>
+          )}
+          <button
+            type="submit"
+            className="submit_btn"
+          >
+            Submit
+          </button>
         </form>
       </div>
 
-      <br></br>
-      <hr></hr>
-
       {/* view file section */}
-      <h5>View Excel file</h5>
-      <div className='viewer'>
-        {excelData===null&&<>No file selected</>}
-        {excelData!==null&&(
-          <div className='table-responsive'>
-            <table className='table'>
-              <thead>
-                <tr>
-                  <th scope='col'></th>
-                  <th scope='col'>
-                    <select>
-                        <option>First Name</option>
-                        <option>Last Name</option>
-                        <option>Email</option>
-                        <option>Phone</option>
-                    </select>
-                  </th>
-                  <th scope='col'>
-                    <select>
-                        <option>First Name</option>
-                        <option>Last Name</option>
-                        <option>Email</option>
-                        <option>Phone</option>
-                    </select>
-                  </th>
-                  <th scope='col'>
-                    <select>
-                        <option>First Name</option>
-                        <option>Last Name</option>
-                        <option>Email</option>
-                        <option>Phone</option>
-                    </select>
-                  </th>
-                  <th scope='col'>
-                    <select>
-                        <option>First Name</option>
-                        <option>Last Name</option>
-                        <option>Email</option>
-                        <option>Phone</option>
-                    </select>
-                  </th>
-                                   
-                </tr>
-              </thead>
-              <tbody>
-                <Data excelData={excelData}/>
-              </tbody>
-            </table>            
-          </div>
-        )}       
-      </div>
+      <div className="data_container">
+        {excelData === null ? (
+          <>No file selected</>
+        ) : (
+          <div className="table_container">
 
+
+            <div className="show_data_container">
+              <div className="id_div">
+                
+              </div>
+              {excelData.map((ele) => (
+                <div className="table_data">{ele.id}</div>
+              ))}
+
+            </div>
+
+
+            <ShowData excelData={excelData} state={"first"} />
+            <ShowData excelData={excelData} state={"last"} />
+            <ShowData excelData={excelData} state={"email"} />
+            <ShowData excelData={excelData} state={"phone"} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
