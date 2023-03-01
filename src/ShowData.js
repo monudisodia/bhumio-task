@@ -3,7 +3,7 @@ import "./ShowData.css"
 
 export const ShowData = ({ excelData, state }) => {
   const [currState, setCurrState] = useState(state);
-  const mapData = ["first", "last", "email", "phone"];
+  const mapData = ["FirstName", "LastName", "Email", "Phone"];
 
   const handleStateChange = (e) => {
     setCurrState(e.target.value);

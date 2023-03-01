@@ -13,7 +13,7 @@ function Main() {
   // it will contain array of objects
 
 
-  useEffect(()=>{
+  useEffect(() => {
     if (excelFile !== null) {
       const workbook = XLSX.read(excelFile, { type: "buffer" });
       const worksheetName = workbook.SheetNames[0];
@@ -21,14 +21,19 @@ function Main() {
       const data = XLSX.utils.sheet_to_json(worksheet);
       setExcelData(data);
     }
-  },[excelFile])
+  }, [excelFile])
+
+
+
   // handle File
   const fileType = [
     "application/vnd.ms-excel",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ];
 
-  
+
+
+
   const handleFile = (e) => {
     let selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -49,11 +54,10 @@ function Main() {
     }
   };
 
-  
+
 
   // submit function
   const handleSubmit = (e) => {
-    e.preventDefault();
     setExcelFile(null);
     setExcelData(null);
 
@@ -65,32 +69,25 @@ function Main() {
   return (
     <div className="main_container">
       {/* upload file section */}
-      <div className="form">
-        <form className="form_container" autoComplete="off" onSubmit={handleSubmit}>
-          <label class="label">
-            <input
-              type="file"
-              class="custom-file-input"
-              onChange={handleFile}
-              required
-            />
-            <span>Import CSV...</span>
-          </label>
+      <div className="form_container">
+        <label class="label">
+          <input
+            type="file"
+            class="custom-file-input"
+            onChange={handleFile}
+            required
+          />
+          <span>Import CSV...</span>
+        </label>
 
 
 
-          {excelFileError && (
-            <div className="text-danger">
-              {excelFileError}
-            </div>
-          )}
-          <button
-            type="submit"
-            className="submit_btn"
-          >
-            Submit
-          </button>
-        </form>
+        {excelFileError && (
+          <div className="text-danger">
+            {excelFileError}
+          </div>
+        )}
+        <button type="submit" className="submit_btn" onClick={handleSubmit}>Finish</button>
       </div>
 
       {/* view file section */}
@@ -103,7 +100,7 @@ function Main() {
 
             <div className="show_data_container">
               <div className="id_div">
-                
+                    
               </div>
               {excelData.map((ele) => (
                 <div className="table_data">{ele.id}</div>
@@ -111,11 +108,10 @@ function Main() {
 
             </div>
 
-
-            <ShowData excelData={excelData} state={"first"} />
-            <ShowData excelData={excelData} state={"last"} />
-            <ShowData excelData={excelData} state={"email"} />
-            <ShowData excelData={excelData} state={"phone"} />
+            <ShowData excelData={excelData} state={"FirstName"} />
+            <ShowData excelData={excelData} state={"LastName"} />
+            <ShowData excelData={excelData} state={"Email"} />
+            <ShowData excelData={excelData} state={"Phone"} />
           </div>
         )}
       </div>
