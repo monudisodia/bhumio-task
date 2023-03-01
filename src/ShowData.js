@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./ShowData.css"
 
-export const ShowData = ({ excelData, state }) => {
+export const ShowData = ({ csvData, state }) => {
   const [currState, setCurrState] = useState(state);
   const mapData = ["FirstName", "LastName", "Email", "Phone"];
 
@@ -10,12 +10,17 @@ export const ShowData = ({ excelData, state }) => {
   };
   return (
     <div className="show_data_container">
+ 
+       {/* this is select part for heading */}
+
       <select onChange={handleStateChange}>
         {mapData.map((item) => (
           <option selected={item === currState}>{item}</option>
         ))}
       </select>
-      {excelData.map((ele) => (
+
+      {/* this is data part of the table */}
+      {csvData.map((ele) => (
         <div className="table_data">{ele[currState]}</div>
       ))}
     </div>

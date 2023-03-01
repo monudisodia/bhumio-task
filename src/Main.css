@@ -30,11 +30,11 @@ label.label input[type="file"] {
   .main_container{
     width:60%;
     border: 3px solid #157ad1;
-    margin: 10% 20% ;
+    margin: 3% 20% ;
     border-radius: 10px;
-    min-height: 400px;
+    min-height: 350px;
     min-width: 400px;
-    padding-right: 20px;
+    padding-right: 0px;
     
   }
 

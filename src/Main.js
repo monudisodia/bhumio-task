@@ -1,27 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { ShowData } from "./ShowData";
 import "./Main.css"
 
 function Main() {
   // on change states
-  const [excelFile, setExcelFile] = useState(null);
-  const [excelFileError, setExcelFileError] = useState(null);
+  const [inputFile, setInputFile] = useState(null);
+  const [inputFileError, setInputFileError] = useState(null);
 
-  // submit
-  const [excelData, setExcelData] = useState(null);
+  const [csvData, setCsvData] = useState(null);
   // it will contain array of objects
+
+  const inputRef = useRef();
 
 
   useEffect(() => {
-    if (excelFile !== null) {
-      const workbook = XLSX.read(excelFile, { type: "buffer" });
-      const worksheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[worksheetName];
+    if (inputFile !== null) {
+      const csvFile = XLSX.read(inputFile, { type: "buffer" });
+      const worksheetName = csvFile.SheetNames[0];
+      const worksheet = csvFile.Sheets[worksheetName];
       const data = XLSX.utils.sheet_to_json(worksheet);
-      setExcelData(data);
+      setCsvData(data);
     }
-  }, [excelFile])
+  }, [inputFile])
 
 
 
@@ -34,20 +35,20 @@ function Main() {
 
 
 
-  const handleFile = (e) => {
+  const inputFileHandle = (e) => {
     let selectedFile = e.target.files[0];
     if (selectedFile) {
       console.log(selectedFile.type);
       if (selectedFile && fileType.includes(selectedFile.type)) {
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(selectedFile);
-        reader.onload = (e) => {
-          setExcelFileError(null);
-          setExcelFile(e.target.result);
+        let readingFile = new FileReader();
+        readingFile.readAsArrayBuffer(selectedFile);
+        readingFile.onload = (e) => {
+          setInputFileError(null);
+          setInputFile(e.target.result);
         };
       } else {
-        setExcelFileError("Please select only excel file types");
-        setExcelFile(null);
+        setInputFileError("Please select only excel file types");
+        setInputFile(null);
       }
     } else {
       console.log("plz select your file");
@@ -56,43 +57,46 @@ function Main() {
 
 
 
-  // submit function
-  const handleSubmit = (e) => {
-    setExcelFile(null);
-    setExcelData(null);
-
+  // Finish function
+  const finishHandle = (e) => {
+    setInputFile(null);
+    setCsvData(null);
+    inputRef.current.value = null;
   };
 
 
-  console.log(excelData);
+  console.log(csvData);
 
   return (
     <div className="main_container">
-      {/* upload file section */}
+      {/* upload input file section */}
       <div className="form_container">
         <label class="label">
           <input
             type="file"
             class="custom-file-input"
-            onChange={handleFile}
+            onChange={inputFileHandle}
+            ref={inputRef}
             required
           />
           <span>Import CSV...</span>
         </label>
 
 
-
-        {excelFileError && (
+        {/* finish button section */}
+        {inputFileError && (
           <div className="text-danger">
-            {excelFileError}
+            {inputFileError}
           </div>
         )}
-        <button type="submit" className="submit_btn" onClick={handleSubmit}>Finish</button>
+        <button className="submit_btn" onClick={finishHandle}>Finish</button>
       </div>
 
-      {/* view file section */}
+
+
+      {/* data file section for table view */}
       <div className="data_container">
-        {excelData === null ? (
+        {csvData === null ? (
           <>No file selected</>
         ) : (
           <div className="table_container">
@@ -100,18 +104,18 @@ function Main() {
 
             <div className="show_data_container">
               <div className="id_div">
-                    
+
               </div>
-              {excelData.map((ele) => (
+              {csvData.map((ele) => (
                 <div className="table_data">{ele.id}</div>
               ))}
 
             </div>
 
-            <ShowData excelData={excelData} state={"FirstName"} />
-            <ShowData excelData={excelData} state={"LastName"} />
-            <ShowData excelData={excelData} state={"Email"} />
-            <ShowData excelData={excelData} state={"Phone"} />
+            <ShowData csvData={csvData} state={"FirstName"} />
+            <ShowData csvData={csvData} state={"LastName"} />
+            <ShowData csvData={csvData} state={"Email"} />
+            <ShowData csvData={csvData} state={"Phone"} />
           </div>
         )}
       </div>
